@@ -1,10 +1,14 @@
+# 29 Januray 2022 - Modified by KuschAoe
+
 import json
 import os
 import pathlib
 import sys
 import time
+
 from typing import Any, Dict, Union
 
+import requests
 from PyQt5 import QtCore
 
 from overlay.logging_func import get_logger
@@ -41,7 +45,7 @@ def version_to_int(version: str):
 def version_check(version: str) -> str:
     """ Checks version. Returns either link for the new version or an empty string. """
     try:
-        url = "https://raw.githubusercontent.com/FluffyMaguro/AoE4_Overlay/main/version.json"
+        url = "https://raw.githubusercontent.com/kuschAoe/AoE4_ReplayOverlay/main/version.json"
         data = json.loads(requests.get(url).text)
         if version_to_int(version) < version_to_int(data['version']):
             return data['link']

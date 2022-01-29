@@ -87,7 +87,6 @@ class TabWidget(QtWidgets.QTabWidget):
     def stop_checking_api(self):
         """ The app is closing, we need to start shuttings things down"""
         self.force_stop = True
-        self.api_checker.force_stop = True
 
     def check_for_new_version(self):
         """ Checks for a new version, creates a button if there is one """
