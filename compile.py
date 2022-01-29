@@ -1,3 +1,4 @@
+ # 29 Januray 2022 - Modified by KuschAoe
 """
 This manages compiling the app with Nuitka and packaging it
 
