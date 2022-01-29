@@ -32,7 +32,7 @@ def excepthook(exc_type: Type[BaseException], exc_value: Exception,
         logger.exception("Failed to save settings")
     # Shut down other threads
     try:
-        Main.centralWidget().stop_checking_api()
+        Main.centralWidget().force_stop = True
     except Exception:
         pass
     sys.exit()
@@ -89,12 +89,15 @@ class MainApp(QtWidgets.QMainWindow):
 
         self.show()
 
+    def closeEvent(self, event):
+        Main.centralWidget().settigns_tab.overlay_widget.hide()
+
     def finish(self):
         """ Give it some time to stop everything correctly"""
         settings.app_width = self.width()
         settings.app_height = self.height()
         settings.save()
-        self.centralWidget().stop_checking_api()
+        Main.centralWidget().force_stop = True
         pyqt_wait(1000)
 
 

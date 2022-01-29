@@ -62,15 +62,12 @@ class OverlayWidget(QtWidgets.QWidget):
             self.setWindowFlags(QtCore.Qt.FramelessWindowHint
                                 | QtCore.Qt.WindowTransparentForInput
                                 | QtCore.Qt.WindowStaysOnTopHint
-                                | QtCore.Qt.CoverWindow
                                 | QtCore.Qt.NoDropShadowWindowHint
                                 | QtCore.Qt.WindowDoesNotAcceptFocus)
-            self.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
         else:
             self.setWindowFlags(QtCore.Qt.Window
                                 | QtCore.Qt.CustomizeWindowHint
                                 | QtCore.Qt.WindowTitleHint)
-            self.setAttribute(QtCore.Qt.WA_TranslucentBackground, False)
 
     def change_state(self):
         """ Changes the widget to be movable or not"""

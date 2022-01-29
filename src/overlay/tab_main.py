@@ -1,3 +1,5 @@
+ # 29 Januray 2022 - Modified by KuschAoe
+
 import importlib
 import platform
 import time
@@ -14,6 +16,7 @@ from overlay.settings import settings
 from overlay.tab_override import OverrideTab
 from overlay.tab_settings import SettingsTab
 from overlay.worker import scheldule
+from overlay.kuschPfusch import kuschPfuschWorker
 
 logger = get_logger(__name__)
 
@@ -40,53 +43,21 @@ class TabWidget(QtWidgets.QTabWidget):
         self.check_for_new_version()
         self.settigns_tab.start()
         self.check_waking()
+        self.kuschPfuschScheduler()
 
-    def got_match_history(self, match_history: List[Any]):
-        if match_history is None:
-            self.settigns_tab.message(
-                "Failed to get match history! Possibly an issue with AoEIV.net",
-                color='red')
-            logger.warning("No match history data")
-            return
-        self.settigns_tab.message("")
-        self.stats_tab.update_other_stats(match_history)
-        self.games_tab.update_widgets(match_history)
-
-    def run_new_game_check(self, delayed_seconds: int = 0):
-        """ Creates a new thread for a new api check"""
-        scheldule(self.new_game, self.api_checker.check_for_new_game,
+    def kuschPfuschScheduler(self, delayed_seconds: int = 0):
+        scheldule(self.newReplayData, kuschPfuschWorker,
                   delayed_seconds)
 
-    def new_game(self, game_data: Optional[Dict[str, Any]]):
-        """Received new data from api check, passes data along and reruns the check"""
-        if self.force_stop:
-            return
-        if game_data is not None and "new_rating" in game_data:
-            logger.info(
-                f"Game finished (rating_timestamp: {game_data['timestamp']})")
-            self.graph_tab.run_update()
-            self.stats_tab.run_mode_update()
-            self.update_with_match_history_data(2)
-        elif game_data is not None:
-            processed = hf.process_game(game_data)
-            start = time.strftime("%Y-%m-%d %H:%M:%S",
-                                  time.localtime(processed['started']))
-            logger.info(
-                f"New live game (match_id: {processed['match_id']} | mode: {processed['mode']-16} | started: {start})"
-            )
-            self.override_tab.update_data(processed)
-            if not self.prevent_overlay_update:
-                self.settigns_tab.overlay_widget.update_data(processed)
-                self.websocket_manager.send({
-                    "type": "player_data",
-                    "data": processed
-                })
+    def newReplayData(self, game_data: Optional[Dict[str, Any]]):
 
-        self.run_new_game_check(delayed_seconds=30)
+        self.settigns_tab.overlay_widget.players[1].name.setText(game_data["playerName"])
+        self.settigns_tab.overlay_widget.players[1].rating.setText(str(game_data["villagerCount"]))
+        self.settigns_tab.overlay_widget.players[1].rank.setText(str(game_data["villagerCount"]))
+        self.settigns_tab.overlay_widget.players[1].show()
 
-    def stop_checking_api(self):
-        """ The app is closing, we need to start shuttings things down"""
-        self.force_stop = True
+        if not self.force_stop:
+            self.kuschPfuschScheduler(delayed_seconds=1)
 
     def check_for_new_version(self):
         """ Checks for a new version, creates a button if there is one """
@@ -148,6 +119,5 @@ class TabWidget(QtWidgets.QTabWidget):
             keyboard.unhook_all()
             keyboard = importlib.reload(keyboard)
             self.settigns_tab.init_hotkeys()
-            self.buildorder_tab.init_hotkeys()
         except Exception:
             logger.exception(f"Failed to reset keyboard")

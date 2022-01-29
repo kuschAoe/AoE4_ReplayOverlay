@@ -1,3 +1,5 @@
+ # 29 Januray 2022 - Modified by KuschAoe
+
 from typing import Any, Dict
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -213,6 +215,7 @@ class AoEOverlay(OverlayWidget):
 
     def update_style(self, font_size: int):
         self.setStyleSheet(
+            "QWidget{background: #000000}"
             f"QLabel {{font-size: {font_size}pt; color: white }}"
             "QFrame#inner_frame"
             "{"
