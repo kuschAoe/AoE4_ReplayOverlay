@@ -2,7 +2,6 @@ from typing import Any, Callable, Dict
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from overlay.aoe4_data import civ_data
 from overlay.helper_func import file_path
 from overlay.logging_func import get_logger
 from overlay.overlay_widget import AoEOverlay, PlayerWidget
@@ -35,9 +34,6 @@ class InnerPlayer(PlayerWidget):
 
     def create_widgets(self):
         self.flag = QtWidgets.QComboBox()
-        for i, civ in enumerate(civ_data.values()):
-            self.flag.addItem(civ)
-            self.flag.setItemIcon(i, get_icon(civ))
 
         self.name = QtWidgets.QLineEdit()
         self.team_cb = QtWidgets.QComboBox()

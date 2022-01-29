@@ -3,7 +3,7 @@ import os
 
 import appdirs
 
-CONFIG_FOLDER = os.path.join(appdirs.user_data_dir(), "AoE4_Overlay")
+CONFIG_FOLDER = os.path.join(appdirs.user_data_dir(), "AoE4_ReplayOverlay")
 LOG_FILE = os.path.join(CONFIG_FOLDER, 'overlay.log')
 
 if not os.path.isdir(CONFIG_FOLDER):

@@ -9,17 +9,10 @@ import keyboard
 from PyQt5 import QtWidgets
 
 import overlay.helper_func as hf
-from overlay.api_checking import Api_checker, get_full_match_history
 from overlay.logging_func import get_logger
 from overlay.settings import settings
-from overlay.tab_buildorders import BoTab
-from overlay.tab_games import MatchHistoryTab
-from overlay.tab_graphs import GraphTab
 from overlay.tab_override import OverrideTab
-from overlay.tab_random import RandomTab
 from overlay.tab_settings import SettingsTab
-from overlay.tab_stats import StatsTab
-from overlay.websocket import Websocket_manager
 from overlay.worker import scheldule
 
 logger = get_logger(__name__)
@@ -29,54 +22,24 @@ class TabWidget(QtWidgets.QTabWidget):
     def __init__(self, parent, version: str):
         super().__init__(parent)
         self.version = version
-        self.api_checker = Api_checker()
-        self.websocket_manager = Websocket_manager(settings.websocket_port)
         self.force_stop: bool = False
         self.prevent_overlay_update: bool = False
 
-        self.games_tab = MatchHistoryTab(self)
-        self.graph_tab = GraphTab(self)
-        self.random_tab = RandomTab(self)
-        self.stats_tab = StatsTab(self)
-        self.buildorder_tab = BoTab(self)
         self.override_tab = OverrideTab(self)
         self.override_tab.data_override.connect(self.override_event)
         self.override_tab.update_override.connect(self.override_update_event)
         self.settigns_tab = SettingsTab(self)
-        self.settigns_tab.new_profile.connect(self.new_profile_found)
 
         self.addTab(self.settigns_tab, "Settings")
-        self.addTab(self.games_tab, "Games")
-        self.addTab(self.graph_tab, "Rating")
-        self.addTab(self.stats_tab, "Stats")
         self.addTab(self.override_tab, "Override")
-        self.addTab(self.buildorder_tab, "Build orders")
-        self.addTab(self.random_tab, "Randomize")
 
     def start(self):
         logger.info(
             f"Starting (v{self.version}) (c:{hf.is_compiled()}) [{platform.platform()}]"
         )
         self.check_for_new_version()
-        hf.create_custom_files()
         self.settigns_tab.start()
-        self.run_new_game_check()
-        self.websocket_manager.run()
-        self.send_ws_colors()
         self.check_waking()
-
-    def new_profile_found(self):
-        self.api_checker.reset()
-        self.graph_tab.run_update()
-        self.stats_tab.run_mode_update()
-        self.stats_tab.clear_match_data()
-        self.games_tab.clear_games()
-        self.update_with_match_history_data(10000)
-        self.parent().update_title(settings.player_name)
-
-    def update_with_match_history_data(self, amount: int):
-        """ Gets match history and updates games tab and passes data to stats tab"""
-        scheldule(self.got_match_history, get_full_match_history, amount)
 
     def got_match_history(self, match_history: List[Any]):
         if match_history is None:
@@ -143,11 +106,6 @@ class TabWidget(QtWidgets.QTabWidget):
     def override_update_event(self, prevent: bool):
         self.prevent_overlay_update = prevent
 
-    def send_ws_colors(self):
-        self.websocket_manager.send({
-            "type": "color",
-            "data": settings.team_colors
-        })
 
     ### Functionality dedicated to checking for PC waking, and resetting keyboard threads
 

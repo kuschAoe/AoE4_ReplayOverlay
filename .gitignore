@@ -1,4 +1,4 @@
-venv/*
+.venv/*
 __pycache__/*
 .vscode/*
 AoE4_Overlay.build/*

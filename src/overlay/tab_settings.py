@@ -1,12 +1,10 @@
 import keyboard
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from overlay.api_checking import find_player
 from overlay.custom_widgets import CustomKeySequenceEdit
 from overlay.logging_func import get_logger
 from overlay.overlay_widget import AoEOverlay
 from overlay.settings import settings
-from overlay.worker import scheldule
 
 logger = get_logger(__name__)
 
@@ -29,45 +27,8 @@ class SettingsTab(QtWidgets.QWidget):
         self.main_layout.setSpacing(25)
         self.setLayout(self.main_layout)
 
-        ### Profile box
-        profile_box = QtWidgets.QGroupBox("Profile")
-        profile_box.setSizePolicy(
-            QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed,
-                                  QtWidgets.QSizePolicy.Fixed))
-        profile_box.setMinimumSize(400, 100)
-        profile_box_layout = QtWidgets.QGridLayout()
-        profile_box.setLayout(profile_box_layout)
-        self.main_layout.addWidget(profile_box)
-
-        # Profile info
-        self.profile_info = QtWidgets.QLabel("No player identified")
-        self.profile_info.setStyleSheet("font-weight: bold")
-        self.profile_info.setTextInteractionFlags(
-            QtCore.Qt.TextSelectableByMouse)
-        profile_box_layout.addWidget(self.profile_info)
-
-        # Multi search
-        self.multi_search = QtWidgets.QLineEdit()
-        self.multi_search.setPlaceholderText("Steam ID / Profile ID / Name")
-        self.multi_search.setToolTip(
-            'Search for your account with one of these (Steam ID / Profile ID / Name).'
-            ' Searching by name might not find the correct player.')
-        self.multi_search.setFocusPolicy(QtCore.Qt.ClickFocus)
-        self.multi_search.setMaximumWidth(220)
-        profile_box_layout.addWidget(self.multi_search, 1, 0)
-
-        # Multi search button
-        self.multi_search_btn = QtWidgets.QPushButton("Search")
-        self.multi_search_btn.clicked.connect(self.find_profile)
-        self.multi_search_btn.setShortcut("Return")
-        self.multi_search_btn.setToolTip(
-            'Search for your account with one of these (Steam ID / Profile ID / Name).'
-            ' Searching by name might not find the correct player.')
-        profile_box_layout.addWidget(self.multi_search_btn, 1, 1)
-
         # Notification
         self.notification_label = QtWidgets.QLabel()
-        profile_box_layout.addWidget(self.notification_label, 2, 0)
 
         ### Overlay box
         overlay_box = QtWidgets.QGroupBox("Overlay")
@@ -126,7 +87,6 @@ class SettingsTab(QtWidgets.QWidget):
 
     def start(self):
         # Initialize
-        self.update_profile_info()
         self.init_hotkeys()
 
         if settings.steam_id or settings.profile_id:
@@ -139,21 +99,6 @@ class SettingsTab(QtWidgets.QWidget):
             keyboard.add_hotkey(settings.overlay_hotkey,
                                 self.show_hide_overlay.emit)
 
-    def update_profile_info(self):
-        """ Updates profile information based on found steam_id and profile_id"""
-        s = []
-        if settings.player_name:
-            s.append(settings.player_name)
-        if settings.steam_id:
-            s.append(f"Steam_id: {settings.steam_id}")
-        if settings.profile_id:
-            s.append(f"Profile_id: {settings.profile_id}")
-
-        if s:
-            self.profile_info.setText('\n'.join(s))
-            self.profile_info.setStyleSheet(
-                "color: #359c20; font-weight: bold")
-
     def notification(self, text: str, color: str = "black"):
         """ Shows a notification"""
         self.notification_label.setText(text)
@@ -163,24 +108,6 @@ class SettingsTab(QtWidgets.QWidget):
         """ Shows a message"""
         self.msg.setText(text)
         self.msg.setStyleSheet(f"color: {color}")
-
-    def find_profile(self):
-        """ Attempts to find player ids based on provided text (name, either id)"""
-        self.notification_label.setText("")
-        text = self.multi_search.text().strip()
-        if not text:
-            return
-        logger.info(f"Finding a player with key: {text}")
-
-        scheldule(self.find_profile_finish, find_player, text)
-
-    def find_profile_finish(self, result: bool):
-        if result:
-            self.new_profile.emit()
-            self.update_profile_info()
-            self.notification("Player found!", "#359c20")
-        else:
-            self.notification("Failed to find such player!", "red")
 
     def font_size_changed(self):
         font_size = self.font_size_combo.currentIndex() + 1
