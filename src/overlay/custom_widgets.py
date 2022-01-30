@@ -57,9 +57,6 @@ class OverlayWidget(QtWidgets.QWidget):
     def save_geometry(self):
         ...
 
-    def update_styl(self):
-        ...
-
     def set_state(self, translucent: bool):
         if translucent:
             self.setWindowFlags(QtCore.Qt.FramelessWindowHint
@@ -68,16 +65,18 @@ class OverlayWidget(QtWidgets.QWidget):
                                 | QtCore.Qt.NoDropShadowWindowHint
                                 | QtCore.Qt.WindowDoesNotAcceptFocus)
         else:
-            self.setWindowFlags(QtCore.Qt.FramelessWindowHint
+            self.setWindowFlags(QtCore.Qt.Window
                                 | QtCore.Qt.CustomizeWindowHint
                                 | QtCore.Qt.WindowTitleHint)
 
     def change_state(self):
         """ Changes the widget to be movable or not"""
         self.show()
+        pos = self.pos()
         if self.fixed:
             self.fixed = False
             self.set_state(translucent=False)
+            self.move(pos.x() - 8, pos.y() - 31)
         else:
             self.fixed = True
             self.set_state(translucent=True)
