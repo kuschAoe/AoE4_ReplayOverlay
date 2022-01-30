@@ -81,5 +81,4 @@ class OverlayWidget(QtWidgets.QWidget):
             self.fixed = True
             self.set_state(translucent=True)
             self.save_geometry()
-        self.update_styl()
         self.show()

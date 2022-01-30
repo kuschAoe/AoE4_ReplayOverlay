@@ -104,15 +104,6 @@ class SettingsTab(QtWidgets.QWidget):
         copy_command_button.clicked.connect(self.copy_command_to_clipboard)
         extraction_layout.addWidget(copy_command_button, 0, 1)
 
-        # Position change button
-        self.btn_change_position = QtWidgets.QPushButton(
-            "Change/fix overlay position")
-        self.btn_change_position.setToolTip(
-            "Click to change overlay position. Click again to fix its position.")
-        self.btn_change_position.clicked.connect(
-            self.overlay_widget.change_state)
-        overlay_layout.addWidget(self.btn_change_position, 2, 0, 1, 2)
-
         ### Messages
         self.msg = QtWidgets.QLabel()
         self.main_layout.addWidget(self.msg)

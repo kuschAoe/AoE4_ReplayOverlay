@@ -135,14 +135,11 @@ class AoEOverlay(OverlayWidget):
     def init_players(self):
         for i in range(8):
             self.players.append(PlayerWidget(i + 1, self.playerlayout))
-
-    def update_styl(self):
-        self.update_style(settings.font_size)
+        [p.show(False) for p in self.players]
 
     def update_style(self, font_size: int):
-        color = self.get_background_color()
         self.setStyleSheet(
-            f"QWidget{{background: {color}}}"
+            "QWidget{background: black}"
             f"QLabel {{font-size: {font_size}pt; color: white }}"
             "QFrame#inner_frame"
             "{"
@@ -156,12 +153,6 @@ class AoEOverlay(OverlayWidget):
 
         if self.isVisible():
             self.show()
-
-    def get_background_color(self) -> str:
-        if self.fixed:
-            return "black"
-        else:
-            return "white"
 
     def update_data(self, game_data: Dict[str, Any]):
         [p.show(False) for p in self.players]
