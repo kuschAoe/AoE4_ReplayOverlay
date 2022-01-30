@@ -14,7 +14,7 @@ class ThreadShutDownException(Exception):
     pass
 
 def sleep(duration: float, interval: float):
-    for _ in range(duration/interval):
+    for _ in range(int(duration/interval)):
         if not continue_running():
             raise ThreadShutDownException()
         time.sleep(interval)

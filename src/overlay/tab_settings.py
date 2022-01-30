@@ -12,7 +12,12 @@ from overlay.settings import settings
 
 logger = get_logger(__name__)
 
-command = "dofile(\"" + file_path("AoE4LuaScript/OverlayDataCollector.lua") + "\")"
+def build_aoe4_console_command() -> str:
+    path = file_path("AoE4LuaScript/OverlayDataCollector.lua")
+    path_with_slashes = path.replace("\\", "/")
+    return "dofile(\"" + path_with_slashes+ "\")"
+
+command = build_aoe4_console_command()
 
 class SettingsTab(QtWidgets.QWidget):
     show_hide_overlay = QtCore.pyqtSignal()
