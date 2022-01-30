@@ -159,8 +159,6 @@ class AoEOverlay(OverlayWidget):
         for i, player in enumerate(game_data['players']):
             self.players[i].update_player(player)
 
-        self.show()
-
     def save_geometry(self):
         """ Saves overlay geometry into settings"""
         pos = self.pos()
