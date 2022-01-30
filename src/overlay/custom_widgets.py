@@ -57,6 +57,9 @@ class OverlayWidget(QtWidgets.QWidget):
     def save_geometry(self):
         ...
 
+    def update_styl(self):
+        ...
+
     def set_state(self, translucent: bool):
         if translucent:
             self.setWindowFlags(QtCore.Qt.FramelessWindowHint
@@ -79,4 +82,5 @@ class OverlayWidget(QtWidgets.QWidget):
             self.fixed = True
             self.set_state(translucent=True)
             self.save_geometry()
+        self.update_styl()
         self.show()
