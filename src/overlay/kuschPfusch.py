@@ -9,9 +9,15 @@ def kuschPfuschWorker(delayed_seconds: int
     time.sleep(delayed_seconds)
     global i 
     i = i + 1
-    return {"playerName": "kusch",
-        "villagerCount": i,
-        "militaryCount": 42}
+    return {
+        "players": [{
+            "name": "kusch",
+            "civ": "English",
+            "worker": str(i),
+            "military": "42",
+            "team": 1
+            }],
+        }
 
 
     

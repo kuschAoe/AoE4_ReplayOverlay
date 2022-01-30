@@ -13,7 +13,6 @@ from PyQt5 import QtWidgets
 import overlay.helper_func as hf
 from overlay.logging_func import get_logger
 from overlay.settings import settings
-from overlay.tab_override import OverrideTab
 from overlay.tab_settings import SettingsTab
 from overlay.worker import scheldule
 from overlay.kuschPfusch import kuschPfuschWorker
@@ -28,13 +27,9 @@ class TabWidget(QtWidgets.QTabWidget):
         self.force_stop: bool = False
         self.prevent_overlay_update: bool = False
 
-        self.override_tab = OverrideTab(self)
-        self.override_tab.data_override.connect(self.override_event)
-        self.override_tab.update_override.connect(self.override_update_event)
         self.settigns_tab = SettingsTab(self)
 
         self.addTab(self.settigns_tab, "Settings")
-        self.addTab(self.override_tab, "Override")
 
     def start(self):
         logger.info(
@@ -51,10 +46,7 @@ class TabWidget(QtWidgets.QTabWidget):
 
     def newReplayData(self, game_data: Optional[Dict[str, Any]]):
 
-        self.settigns_tab.overlay_widget.players[1].name.setText(game_data["playerName"])
-        self.settigns_tab.overlay_widget.players[1].rating.setText(str(game_data["villagerCount"]))
-        self.settigns_tab.overlay_widget.players[1].rank.setText(str(game_data["villagerCount"]))
-        self.settigns_tab.overlay_widget.players[1].show()
+        self.settigns_tab.overlay_widget.update_data(game_data)
 
         if not self.force_stop:
             self.kuschPfuschScheduler(delayed_seconds=1)

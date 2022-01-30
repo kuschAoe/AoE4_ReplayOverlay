@@ -48,7 +48,7 @@ class MainApp(QtWidgets.QMainWindow):
         self.centralWidget().start()
 
     def initUI(self):
-        self.setWindowTitle(f"AoE IV: Replay Overlay ({VERSION})")
+        self.setWindowTitle(f"AoE IV: Replay Overlay Control Panel({VERSION})")
         self.setWindowIcon(QtGui.QIcon(file_path('img/icon.ico')))
         self.setGeometry(0, 0, settings.app_width, settings.app_height)
         self.move(QtWidgets.QDesktopWidget().availableGeometry().center() -
