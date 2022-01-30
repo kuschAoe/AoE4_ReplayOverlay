@@ -53,7 +53,7 @@ class PlayerWidget:
             widget.show() if show else widget.hide()
 
     def update_name_color(self):
-        color = settings.team_colors[(self.team - 1) %
+        color = settings.team_colors[int(self.team) %
                                      len(settings.team_colors)]
         color = tuple(color)
         self.name.setStyleSheet("font-weight: bold; "
@@ -78,8 +78,8 @@ class PlayerWidget:
 
         # Fill the rest
         self.name.setText(player_data['name'])
-        self.worker.setText(player_data['worker'])
-        self.military.setText(player_data['military'])
+        self.worker.setText(str(player_data['worker']))
+        self.military.setText(str(player_data['military']))
 
         self.show() if player_data['name'] else self.show(False)
 

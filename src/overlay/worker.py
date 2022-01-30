@@ -5,6 +5,7 @@ from typing import Callable, Optional
 from PyQt5 import QtCore
 
 from overlay.logging_func import get_logger
+from overlay.thread_shutdown import ThreadShutDownException
 
 logger = get_logger(__name__)
 
@@ -57,6 +58,8 @@ class Worker(QtCore.QRunnable):
         try:
             try:
                 result = self.fn(*self.args, **self.kwargs)
+            except ThreadShutDownException:
+                pass
             except Exception:
                 logger.exception("")
                 exctype, value = sys.exc_info()[:2]

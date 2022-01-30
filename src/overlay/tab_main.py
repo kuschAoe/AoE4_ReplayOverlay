@@ -15,6 +15,7 @@ from overlay.logging_func import get_logger
 from overlay.settings import settings
 from overlay.tab_settings import SettingsTab
 from overlay.worker import scheldule
+from overlay.thread_shutdown import continue_running
 from overlay.kuschPfusch import kuschPfuschWorker
 
 logger = get_logger(__name__)
@@ -24,7 +25,6 @@ class TabWidget(QtWidgets.QTabWidget):
     def __init__(self, parent, version: str):
         super().__init__(parent)
         self.version = version
-        self.force_stop: bool = False
         self.prevent_overlay_update: bool = False
 
         self.settigns_tab = SettingsTab(self)
@@ -45,10 +45,10 @@ class TabWidget(QtWidgets.QTabWidget):
                   delayed_seconds)
 
     def newReplayData(self, game_data: Optional[Dict[str, Any]]):
-
+        
         self.settigns_tab.overlay_widget.update_data(game_data)
-
-        if not self.force_stop:
+        
+        if continue_running():
             self.kuschPfuschScheduler(delayed_seconds=1)
 
     def check_for_new_version(self):
@@ -60,14 +60,6 @@ class TabWidget(QtWidgets.QTabWidget):
         self.settigns_tab.update_button.clicked.connect(
             partial(webbrowser.open, link))
         self.settigns_tab.update_button.show()
-
-    def override_event(self, data: Dict[str, Any]):
-        self.settigns_tab.overlay_widget.update_data(data)
-        self.websocket_manager.send({"type": "player_data", "data": data})
-
-    def override_update_event(self, prevent: bool):
-        self.prevent_overlay_update = prevent
-
 
     ### Functionality dedicated to checking for PC waking, and resetting keyboard threads
 
@@ -83,7 +75,7 @@ class TabWidget(QtWidgets.QTabWidget):
             # Wait 5s
             for _ in range(interval * 2):
                 time.sleep(0.5)
-                if self.force_stop:
+                if not continue_running():
                     return None
             # Check the difference
             diff = time.time() - start

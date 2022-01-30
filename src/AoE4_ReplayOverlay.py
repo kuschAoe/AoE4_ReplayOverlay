@@ -13,6 +13,7 @@ from overlay.helper_func import file_path, pyqt_wait
 from overlay.logging_func import get_logger
 from overlay.settings import CONFIG_FOLDER, settings
 from overlay.tab_main import TabWidget
+from overlay.thread_shutdown import signal_threads_to_shutdown
 
 logger = get_logger(__name__)
 
@@ -32,7 +33,7 @@ def excepthook(exc_type: Type[BaseException], exc_value: Exception,
         logger.exception("Failed to save settings")
     # Shut down other threads
     try:
-        Main.centralWidget().force_stop = True
+        signal_threads_to_shutdown()
     except Exception:
         pass
     sys.exit()
@@ -97,7 +98,7 @@ class MainApp(QtWidgets.QMainWindow):
         settings.app_width = self.width()
         settings.app_height = self.height()
         settings.save()
-        Main.centralWidget().force_stop = True
+        signal_threads_to_shutdown()
         pyqt_wait(1000)
 
 
