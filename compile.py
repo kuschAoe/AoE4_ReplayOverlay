@@ -15,6 +15,7 @@ os.system('cmd /c "python -m nuitka'
           ' --windows-disable-console'
           ' --windows-icon-from-ico=src/img/icon.ico'
           ' --include-data-dir=src/img=img'
+          ' --include-data-dir=src/AoE4LuaScript=AoE4LuaScript'
           ' src/AoE4_ReplayOverlay.py')
 
 # Zip

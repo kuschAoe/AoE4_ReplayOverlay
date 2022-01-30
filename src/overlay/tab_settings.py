@@ -1,6 +1,10 @@
+ # 29 Januray 2022 - Modified by KuschAoe
+
+import sys
 import keyboard
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from overlay.helper_func import file_path
 from overlay.custom_widgets import CustomKeySequenceEdit
 from overlay.logging_func import get_logger
 from overlay.overlay_widget import AoEOverlay
@@ -8,9 +12,9 @@ from overlay.settings import settings
 
 logger = get_logger(__name__)
 
+command = "dofile(\"" + file_path("AoE4LuaScript/OverlayDataCollector.lua") + "\")"
 
 class SettingsTab(QtWidgets.QWidget):
-    new_profile = QtCore.pyqtSignal()
     show_hide_overlay = QtCore.pyqtSignal()
 
     def __init__(self, parent):
@@ -71,6 +75,38 @@ class SettingsTab(QtWidgets.QWidget):
         self.btn_change_position.clicked.connect(
             self.overlay_widget.change_state)
         overlay_layout.addWidget(self.btn_change_position, 2, 0, 1, 2)
+        
+        ### replay data extraction box
+        extraction_box = QtWidgets.QGroupBox("Replay Data Extraction")
+        extraction_box.setMinimumSize(400, 100)
+        extraction_box.setSizePolicy(
+            QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed,
+                                  QtWidgets.QSizePolicy.Fixed))
+        extraction_layout = QtWidgets.QGridLayout()
+        extraction_box.setLayout(extraction_layout)
+        self.main_layout.addWidget(extraction_box)
+
+        # command for ingame console
+        command_label = QtWidgets.QLabel("Command for ingame console:")
+        extraction_layout.addWidget(command_label, 0, 0)
+
+        command_textfiled = QtWidgets.QLineEdit()
+        command_textfiled.setReadOnly(True)
+        command_textfiled.setText(command)
+        extraction_layout.addWidget(command_textfiled, 1, 0, 1, 2)
+
+        copy_command_button = QtWidgets.QPushButton("Copy to clipboard")
+        copy_command_button.clicked.connect(self.copy_command_to_clipboard)
+        extraction_layout.addWidget(copy_command_button, 0, 1)
+
+        # Position change button
+        self.btn_change_position = QtWidgets.QPushButton(
+            "Change/fix overlay position")
+        self.btn_change_position.setToolTip(
+            "Click to change overlay position. Click again to fix its position.")
+        self.btn_change_position.clicked.connect(
+            self.overlay_widget.change_state)
+        overlay_layout.addWidget(self.btn_change_position, 2, 0, 1, 2)
 
         ### Messages
         self.msg = QtWidgets.QLabel()
@@ -89,8 +125,9 @@ class SettingsTab(QtWidgets.QWidget):
         # Initialize
         self.init_hotkeys()
 
-        if settings.steam_id or settings.profile_id:
-            self.new_profile.emit()
+    def copy_command_to_clipboard(self):
+        cb = QtGui.QGuiApplication.clipboard()
+        cb.setText(command, mode=cb.Clipboard)
 
     def init_hotkeys(self):
         if settings.overlay_hotkey:

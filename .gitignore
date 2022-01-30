@@ -1,8 +1,8 @@
 .venv/*
 __pycache__/*
 .vscode/*
-AoE4_Overlay.build/*
-AoE4_Overlay.dist/*
+AoE4_ReplayOverlay.build/*
+AoE4_ReplayOverlay.dist/*
 _compile.bat
 _venv.bat
 _vsc.bat

@@ -34,6 +34,7 @@ def excepthook(exc_type: Type[BaseException], exc_value: Exception,
     # Shut down other threads
     try:
         signal_threads_to_shutdown()
+        pyqt_wait(1000)
     except Exception:
         pass
     sys.exit()
