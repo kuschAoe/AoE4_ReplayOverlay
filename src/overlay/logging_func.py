@@ -1,4 +1,4 @@
- # 29 Januray 2022 - Modified by KuschAoe
+# 29 January 2022 - Modified by KuschAoe
 
 import logging
 import os
