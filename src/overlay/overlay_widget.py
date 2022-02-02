@@ -1,10 +1,10 @@
- # 29 Januray 2022 - Modified by KuschAoe
+ # 29 January 2022 - Modified by KuschAoe
 
 from typing import Any, Dict
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from overlay.custom_widgets import OverlayWidget, VerticalLabel
+from overlay.custom_widgets import OverlayWidget
 from overlay.helper_func import file_path
 from overlay.settings import settings
 
@@ -16,9 +16,11 @@ def set_pixmap(civ: str, widget: QtWidgets.QWidget):
     if civ in PIXMAP_CACHE:
         widget.setPixmap(PIXMAP_CACHE[civ])
         return
-    path = file_path(f"img/flags/{civ}.webp")
+    path = file_path(f"img/{civ}")
     pixmap = QtGui.QPixmap(path)
-    pixmap = pixmap.scaled(widget.width(), widget.height())
+    pixmap = pixmap.scaled(widget.width(), widget.height(), 
+        QtCore.Qt.AspectRatioMode.KeepAspectRatio, 
+        QtCore.Qt.TransformationMode.SmoothTransformation)
     PIXMAP_CACHE[civ] = pixmap
     widget.setPixmap(pixmap)
 
@@ -28,26 +30,35 @@ class PlayerWidget:
     def __init__(self, row: int, toplayout: QtWidgets.QGridLayout):
         self.visible = True
         self.create_widgets()
-        self.name.setStyleSheet("font-weight: bold")
-        self.name.setContentsMargins(5, 0, 10, 0)
-        self.worker.setStyleSheet("color: yellow")
-        self.military.setStyleSheet("color: red")
+        self.name.setContentsMargins(5, 0, 0, 0)
 
-        for column, widget in enumerate((self.flag, self.name, self.worker, self.military)):
+        self.widgets = [self.flag, self.name, self.worker_icon, 
+            self.worker, self.military_icon, self.military]
+
+        for column, widget in enumerate(self.widgets):
             toplayout.addWidget(widget, row, column)
 
     def create_widgets(self):
         # Separated so this can be changed in a child inner overlay for editing
         self.flag = QtWidgets.QLabel()
-        self.flag.setFixedSize(QtCore.QSize(60, 30))
+        self.flag.setFixedSize(QtCore.QSize(60, 50))
         self.name = QtWidgets.QLabel()
+        self.worker_icon = QtWidgets.QLabel()
+        self.worker_icon.setObjectName("icon")
+        self.worker_icon.setFixedSize(QtCore.QSize(24, 48))
+        set_pixmap("overlay_icons/worker.png", self.worker_icon)
         self.worker = QtWidgets.QLabel()
+        self.worker.setContentsMargins(0, 0, 10, 0)
+        self.military_icon = QtWidgets.QLabel()
+        self.military_icon.setObjectName("icon")
+        self.military_icon.setFixedSize(QtCore.QSize(24, 48))
+        set_pixmap("overlay_icons/military.png", self.military_icon)
         self.military = QtWidgets.QLabel()
 
     def show(self, show: bool = True):
         self.visible = show
         """ Shows or hides all widgets in this class """
-        for widget in (self.flag, self.name, self.worker, self.military):
+        for widget in self.widgets:
             widget.show() if show else widget.hide()
 
     def set_color(self, color):
@@ -56,7 +67,7 @@ class PlayerWidget:
                                 f"color: rgba{color}")
 
     def update_player(self, player_data: Dict[str, Any]):
-        set_pixmap(player_data['civ'], self.flag)
+        set_pixmap("flags/" + player_data['civ'] + ".webp", self.flag)
         self.set_color(player_data['color'])
 
         self.name.setText(player_data['name'])
@@ -85,62 +96,39 @@ class AoEOverlay(OverlayWidget):
         self.setWindowTitle('AoE IV: Overlay')
 
     def initUI(self):
-        # Layouts & inner frame
-        layout = QtWidgets.QVBoxLayout()
-        layout.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
-        self.setLayout(layout)
-
-        self.inner_frame = QtWidgets.QFrame()
-        self.inner_frame.setObjectName("inner_frame")
-        layout.addWidget(self.inner_frame)
         self.playerlayout = QtWidgets.QGridLayout()
-        self.playerlayout.setContentsMargins(10, 20, 20, 10)
-        self.playerlayout.setHorizontalSpacing(10)
+        self.playerlayout.setSpacing(0)
         self.playerlayout.setAlignment(QtCore.Qt.AlignRight
                                        | QtCore.Qt.AlignTop)
-        self.inner_frame.setLayout(self.playerlayout)
+        self.setLayout(self.playerlayout)
         self.update_style(settings.font_size)
-
-        # Header
-        worker = QtWidgets.QLabel("Worker")
-        worker.setStyleSheet("color: yellow; font-weight: bold")
-        military = QtWidgets.QLabel("Military")
-        military.setStyleSheet("color: red; font-weight: bold")
         
-        for column, widget in enumerate(
-            (worker, military)):
-            self.playerlayout.addWidget(widget, 0, column + 2)
-
         # Add players
         self.init_players()
 
     def init_players(self):
         for i in range(8):
-            self.players.append(PlayerWidget(i + 1, self.playerlayout))
+            self.players.append(PlayerWidget(i, self.playerlayout))
         [p.show(False) for p in self.players]
 
     def update_style(self, font_size: int):
         self.setStyleSheet(
-            "QWidget{background: black}"
-            f"QLabel {{font-size: {font_size}pt; color: white }}"
-            "QFrame#inner_frame"
-            "{"
-            "background: QLinearGradient("
-            "x1: 0, y1: 0,"
-            "x2: 1, y2: 0,"
-            "stop: 0 rgba(0,0,0,0),"
-            "stop: 0.1 rgba(0,0,0,0.5),"
-            "stop: 1 rgba(0,0,0,1))"
-            "}")
+            "OverlayWidget{background: black}"
+            f"QLabel {{font-size: {font_size}pt; color: white; font-weight: bold; margin-top: 15px}}"
+            "QLabel#icon {margin-top: 0px}"
+            )
 
         if self.isVisible():
             self.show()
 
     def update_data(self, game_data: Dict[str, Any]):
-        [p.show(False) for p in self.players]
+        if not self.fixed:
+            return
 
+        [p.show(False) for p in self.players]
         for i, player in enumerate(game_data['players']):
             self.players[i].update_player(player)
+        self.setFixedSize(self.playerlayout.totalSizeHint())
 
     def save_geometry(self):
         """ Saves overlay geometry into settings"""
