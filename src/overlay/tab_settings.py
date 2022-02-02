@@ -155,8 +155,12 @@ class SettingsTab(QtWidgets.QWidget):
             s.get_aoe4_warnings_log_path())
 
     def init_warnings_log(self):
-        is_custom = s.settings.path_aoe4_warnings_log != None
-        self.enable_warnings_log_path(is_custom)
+        enable = s.settings.path_aoe4_warnings_log != None
+        check_state = QtCore.Qt.CheckState.Unchecked
+        if enable:
+            check_state = QtCore.Qt.CheckState.Checked
+        self.checkbox_custom_path.setCheckState(check_state)
+        self.enable_warnings_log_path(enable)
 
     def clicked_checkbox_custom_path(self):
         isChecked = self.checkbox_custom_path.checkState()
