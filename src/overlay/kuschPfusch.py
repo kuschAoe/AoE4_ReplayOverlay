@@ -2,14 +2,13 @@ from typing import Any, Dict, Optional
 import time
 import json
 import re
-from os import path
 
 from overlay.thread_shutdown import sleep
 from overlay.logging_func import get_logger
+import overlay.settings as s
 
 logger = get_logger(__name__)
 
-aoe4WarningsFilePath = path.expanduser("~\\Documents\\My Games\\Age of Empires IV\\warnings.log")
 
 def tail(f):
     f.seek(-1500, 2)
@@ -18,7 +17,7 @@ def tail(f):
 def get_replay_data() -> Optional[Dict[str, Any]]:
     info = ""
     try:
-        with open(aoe4WarningsFilePath, "rb") as f:
+        with open(s.get_aoe4_warnings_log_path(), "rb") as f:
             info = tail(f)
     except Exception:
         logger.exception("")

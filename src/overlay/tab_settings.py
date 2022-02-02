@@ -1,6 +1,5 @@
 # 29 January 2022 - Modified by KuschAoe
 
-import sys
 import keyboard
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -8,7 +7,7 @@ from overlay.helper_func import file_path
 from overlay.custom_widgets import CustomKeySequenceEdit
 from overlay.logging_func import get_logger
 from overlay.overlay_widget import AoEOverlay
-from overlay.settings import settings
+import overlay.settings as s
 
 logger = get_logger(__name__)
 
@@ -66,7 +65,7 @@ class SettingsTab(QtWidgets.QWidget):
         self.font_size_combo = QtWidgets.QComboBox()
         for i in range(1, 50):
             self.font_size_combo.addItem(f"{i} pt")
-        self.font_size_combo.setCurrentIndex(settings.font_size - 1)
+        self.font_size_combo.setCurrentIndex(s.settings.font_size - 1)
         self.font_size_combo.currentIndexChanged.connect(
             self.font_size_changed)
         overlay_layout.addWidget(self.font_size_combo, 1, 1)
@@ -91,8 +90,8 @@ class SettingsTab(QtWidgets.QWidget):
         extraction_box.setLayout(extraction_layout)
         self.main_layout.addWidget(extraction_box)
 
-        # command for ingame console
-        command_label = QtWidgets.QLabel("Command for ingame console:")
+        # command for in-game console
+        command_label = QtWidgets.QLabel("Command for in-game console:")
         extraction_layout.addWidget(command_label, 0, 0)
 
         command_textfiled = QtWidgets.QLineEdit()
@@ -103,6 +102,28 @@ class SettingsTab(QtWidgets.QWidget):
         copy_command_button = QtWidgets.QPushButton("Copy to clipboard")
         copy_command_button.clicked.connect(self.copy_command_to_clipboard)
         extraction_layout.addWidget(copy_command_button, 0, 1)
+
+        ### AoE4 warnings.log box
+        warnings_log_box = QtWidgets.QGroupBox("AoE4 warnings.log")
+        warnings_log_box.setMinimumSize(400, 100)
+        warnings_log_box.setSizePolicy(
+            QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed,
+                                  QtWidgets.QSizePolicy.Fixed))
+        warnings_log_layout = QtWidgets.QGridLayout()
+        warnings_log_box.setLayout(warnings_log_layout)
+        self.main_layout.addWidget(warnings_log_box)
+
+        self.checkbox_custom_path = QtWidgets.QCheckBox("Custom path to AoE4's warnings.log")
+        warnings_log_layout.addWidget(self.checkbox_custom_path, 0, 0)
+        self.checkbox_custom_path.clicked.connect(self.clicked_checkbox_custom_path)
+
+        self.line_edit_path = QtWidgets.QLineEdit()
+        warnings_log_layout.addWidget(self.line_edit_path, 1, 0)
+        self.line_edit_path.textChanged.connect(self.text_changed_line_edit_path)
+
+        self.button_file_dialog = QtWidgets.QPushButton("...")
+        warnings_log_layout.addWidget(self.button_file_dialog, 1, 1)
+        self.button_file_dialog.clicked.connect(self.clicked_button_file_dialog)
 
         ### Messages
         self.msg = QtWidgets.QLabel()
@@ -118,18 +139,44 @@ class SettingsTab(QtWidgets.QWidget):
         self.main_layout.addWidget(self.update_button)
 
     def start(self):
-        # Initialize
         self.init_hotkeys()
+        self.init_warnings_log()
 
     def copy_command_to_clipboard(self):
         cb = QtGui.QGuiApplication.clipboard()
         cb.setText(command, mode=cb.Clipboard)
 
+    def enable_warnings_log_path(self, enable : bool):
+        self.line_edit_path.setEnabled(enable)
+        self.button_file_dialog.setEnabled(enable)
+        if not enable:
+            s.settings.path_aoe4_warnings_log = None
+        self.line_edit_path.setText(
+            s.get_aoe4_warnings_log_path())
+
+    def init_warnings_log(self):
+        is_custom = s.settings.path_aoe4_warnings_log != None
+        self.enable_warnings_log_path(is_custom)
+
+    def clicked_checkbox_custom_path(self):
+        isChecked = self.checkbox_custom_path.checkState()
+        self.enable_warnings_log_path(isChecked)
+
+    def clicked_button_file_dialog(self):
+        file = QtWidgets.QFileDialog.getOpenFileName(
+            self, "AoE4 warnings.log", self.line_edit_path.text())
+        if file[0]:
+            self.line_edit_path.setText(file[0])
+
+    def text_changed_line_edit_path(self):
+        if self.line_edit_path.isEnabled():
+            s.settings.path_aoe4_warnings_log = self.line_edit_path.text()
+
     def init_hotkeys(self):
-        if settings.overlay_hotkey:
+        if s.settings.overlay_hotkey:
             self.key_showhide.setKeySequence(
-                QtGui.QKeySequence.fromString(settings.overlay_hotkey))
-            keyboard.add_hotkey(settings.overlay_hotkey,
+                QtGui.QKeySequence.fromString(s.settings.overlay_hotkey))
+            keyboard.add_hotkey(s.settings.overlay_hotkey,
                                 self.show_hide_overlay.emit)
 
     def notification(self, text: str, color: str = "black"):
@@ -144,7 +191,7 @@ class SettingsTab(QtWidgets.QWidget):
 
     def font_size_changed(self):
         font_size = self.font_size_combo.currentIndex() + 1
-        settings.font_size = font_size
+        s.settings.font_size = font_size
         self.overlay_widget.update_style(font_size)
 
     def hotkey_changed(self, new_hotkey: str):
@@ -154,13 +201,13 @@ class SettingsTab(QtWidgets.QWidget):
 
         if new_hotkey == "Del":
             self.key_showhide.setKeySequence(QtGui.QKeySequence.fromString(""))
-            settings.overlay_hotkey = ""
+            s.settings.overlay_hotkey = ""
             return
-        elif not new_hotkey or new_hotkey == settings.overlay_hotkey:
+        elif not new_hotkey or new_hotkey == s.settings.overlay_hotkey:
             return
 
-        if settings.overlay_hotkey:
-            keyboard.remove_hotkey(settings.overlay_hotkey)
+        if s.settings.overlay_hotkey:
+            keyboard.remove_hotkey(s.settings.overlay_hotkey)
         logger.info(f"Setting new hotkey to: {new_hotkey}")
-        settings.overlay_hotkey = new_hotkey
+        s.settings.overlay_hotkey = new_hotkey
         keyboard.add_hotkey(new_hotkey, self.show_hide_overlay.emit)

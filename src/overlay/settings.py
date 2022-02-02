@@ -1,3 +1,5 @@
+# 1 February 2022 - Modified by KuschAoe
+
 import json
 import os
 from typing import Dict, List, Optional
@@ -10,30 +12,15 @@ CONFIG_FILE = os.path.join(CONFIG_FOLDER, "config.json")
 
 class _Settings:
     def __init__(self):
-        self.websocket_port: int = 7307
         self.interval: int = 15
         self.app_width: int = 900
         self.app_height: int = 600
-        self.steam_id: Optional[int] = None
-        self.profile_id: Optional[int] = None
-        self.player_name: Optional[str] = None
         self.overlay_hotkey: str = ""
         self.overlay_geometry: Optional[List[int]] = None
         self.font_size: int = 12
-        self.civ_stats_color: str = "#BC8AEA"
-        self.bo_bg_opacity: float = 0.5
-        self.bo_showtitle: bool = True
-        self.bo_font_size: int = 12
-        self.bo_title_color: str = "orange"
-        self.bo_overlay_hotkey_show: str = ""
-        self.bo_overlay_hotkey_cycle: str = ""
-        self.bo_overlay_geometry: Optional[List[int]] = None
-        self.buildorders: Dict[str, str] = {
-            "The best build order": "> Make units\n> Attack\n> Profit"
-        }
-        self.show_graph = {"1": True, "2": True, "3": True, "4": True}
         self.team_colors = ((74, 255, 2, 0.35), (3, 179, 255, 0.35), (255, 0,
                                                                       0, 0.35))
+        self.path_aoe4_warnings_log = None
 
     def load(self):
         """ Loads configuration from app data"""
@@ -57,3 +44,11 @@ class _Settings:
 
 
 settings = _Settings()
+
+def get_aoe4_warnings_log_path() -> str:
+    if settings.path_aoe4_warnings_log is None:
+        return get_aoe4_warnings_log_path_default()
+    return settings.path_aoe4_warnings_log
+
+def get_aoe4_warnings_log_path_default() -> str:
+    return os.path.expanduser("~\\Documents\\My Games\\Age of Empires IV\\warnings.log")
