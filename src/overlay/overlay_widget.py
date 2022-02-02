@@ -164,6 +164,6 @@ class AoEOverlay(OverlayWidget):
         """ Saves overlay geometry into settings"""
         pos = self.pos()
         settings.overlay_geometry = [
-            pos.x(), pos.y(), self.width(),
+            pos.x() + 8, pos.y() + 31, self.width(),
             self.height()
         ]
