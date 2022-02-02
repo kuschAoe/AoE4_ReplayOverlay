@@ -10,6 +10,7 @@ function CollectData()
         local villagerCount = Player_GetEntityCountByUnitType(player, "worker")
         local team = Player_GetTeam(player)
         local civ = Player_GetRaceName(player)
+		local color = Player_GetUIColour(player)
 
         local egroup = Player_GetAllEntities(player)
         local entityCount = EGroup_Count(egroup)
@@ -19,9 +20,6 @@ function CollectData()
             local entity = EGroup_GetEntityAt(egroup, entityIndex)
             if Entity_IsOfType(entity, "military") and not Entity_IsBuilding(entity) then
                 militaryUnitCount = militaryUnitCount + 1
-            --else
-                --local bp = Entity_GetBlueprint(entity)
-                --print(BP_GetName(bp))
             end
         end
 
@@ -35,7 +33,15 @@ function CollectData()
         table.insert(t, tostring(militaryUnitCount))
         table.insert(t, "\", \"team\": \"")
         table.insert(t, tostring(team))
-        table.insert(t, "\"}")
+        table.insert(t, "\", \"color\": [\"")
+        table.insert(t, tostring(color.r))
+        table.insert(t, "\", \"")
+        table.insert(t, tostring(color.g))
+        table.insert(t, "\", \"")
+        table.insert(t, tostring(color.b))
+        table.insert(t, "\", \"")
+        table.insert(t, tostring(color.a))
+        table.insert(t, "\"]}")
         table.insert(t, ",")
     end
 

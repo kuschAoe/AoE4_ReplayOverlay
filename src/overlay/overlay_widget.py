@@ -26,8 +26,6 @@ def set_pixmap(civ: str, widget: QtWidgets.QWidget):
 class PlayerWidget:
     """ Player widget shown on the overlay"""
     def __init__(self, row: int, toplayout: QtWidgets.QGridLayout):
-        self.team: int = 0
-        self.civ: str = ""
         self.visible = True
         self.create_widgets()
         self.name.setStyleSheet("font-weight: bold")
@@ -52,31 +50,15 @@ class PlayerWidget:
         for widget in (self.flag, self.name, self.worker, self.military):
             widget.show() if show else widget.hide()
 
-    def update_name_color(self):
-        color = settings.team_colors[int(self.team) %
-                                     len(settings.team_colors)]
-        color = tuple(color)
+    def set_color(self, color):
+        color = tuple([int(channel) for channel in color])
         self.name.setStyleSheet("font-weight: bold; "
-                                "background: QLinearGradient("
-                                "x1: 0, y1: 0,"
-                                "x2: 1, y2: 0,"
-                                f"stop: 0 rgba{color},"
-                                f"stop: 0.8 rgba{color},"
-                                "stop: 1 rgba(0,0,0,0))")
-
-    def update_flag(self):
-        set_pixmap(self.civ, self.flag)
+                                f"color: rgba{color}")
 
     def update_player(self, player_data: Dict[str, Any]):
-        # Flag
-        self.civ = player_data['civ']
-        self.update_flag()
+        set_pixmap(player_data['civ'], self.flag)
+        self.set_color(player_data['color'])
 
-        # Indicate team with background color
-        self.team = player_data['team']
-        self.update_name_color()
-
-        # Fill the rest
         self.name.setText(player_data['name'])
         self.worker.setText(str(player_data['worker']))
         self.military.setText(str(player_data['military']))
