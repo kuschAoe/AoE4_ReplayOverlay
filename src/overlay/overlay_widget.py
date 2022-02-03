@@ -72,8 +72,8 @@ class PlayerWidget:
         self.set_color(player_data['color'])
 
         self.name.setText(player_data['name'])
-        self.worker.setText(str(player_data['worker']))
-        self.military.setText(str(player_data['military']))
+        self.worker.setText(str(int(float(player_data['worker']))))
+        self.military.setText(str(int(float(player_data['military']))))
 
         self.show() if player_data['name'] else self.show(False)
 
@@ -118,7 +118,7 @@ class AoEOverlay(OverlayWidget):
             "OverlayWidget{background: black}"
             f"QLabel {{font-size: {font_size}pt; color: white; font-weight: bold; margin-top: {font_size*2/3}px; margin-right: {font_size*2/3}px; min-width: {font_size*4}px}}"
             "QLabel#icon {margin-top: 0px; min-width: 0px; margin-right: 0px}"
-            "QLabel#flag {margin-top: 0px; min-width: 0px; margin-right: 0px}"
+            "QLabel#flag {min-width: 0px; margin-right: 0px}"
             )
         
         if self.isVisible():
@@ -132,6 +132,7 @@ class AoEOverlay(OverlayWidget):
         [p.show(False) for p in self.players]
         for i, player in enumerate(game_data['players']):
             self.players[i].update_player(player)
+        self.setFixedSize(self.playerlayout.totalSizeHint())
 
     def save_geometry(self):
         """ Saves overlay geometry into settings"""
