@@ -17,7 +17,7 @@ from overlay.thread_shutdown import signal_threads_to_shutdown
 
 logger = get_logger(__name__)
 
-VERSION = "0.0.0"
+VERSION = "0.0.1"
 
 
 def excepthook(exc_type: Type[BaseException], exc_value: Exception,

@@ -1,6 +1,7 @@
 # 29 January 2022 - Modified by KuschAoe
 
 import logging
+import concurrent_log_handler
 import os
 
 import appdirs
@@ -15,7 +16,8 @@ if not os.path.isdir(CONFIG_FOLDER):
 def get_logger(name: str):
     logger = logging.getLogger(name)
     c_handler = logging.StreamHandler()
-    f_handler = logging.FileHandler(LOG_FILE)
+    f_handler = concurrent_log_handler.ConcurrentRotatingFileHandler(
+        LOG_FILE, mode='a', maxBytes=5*24*1024, backupCount=2)
     logger.setLevel(logging.INFO)
     logger.setLevel(logging.INFO)
 
