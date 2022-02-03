@@ -25,8 +25,10 @@ class PlayerWidget:
         self.civ = "english"
         self.create_widgets()
 
-        self.widgets = [self.flag, self.name, self.worker_icon, 
-            self.worker, self.military_icon, self.military]
+        self.widgets = [self.flag, self.name, 
+            self.worker, self.worker_icon, 
+            self.worker_idle, self.worker_idle_icon, 
+            self.military, self.military_icon]
 
         for column, widget in enumerate(self.widgets):
             toplayout.addWidget(widget, row, column)
@@ -38,12 +40,14 @@ class PlayerWidget:
         self.name = QtWidgets.QLabel()
         self.worker_icon = QtWidgets.QLabel()
         self.worker_icon.setObjectName("icon")
-        set_pixmap("overlay_icons/worker.png", self.worker_icon)
         self.worker = QtWidgets.QLabel()
         self.worker.setAlignment(QtCore.Qt.Alignment(0x82))
+        self.worker_idle_icon = QtWidgets.QLabel()
+        self.worker_idle_icon.setObjectName("icon")
+        self.worker_idle = QtWidgets.QLabel()
+        self.worker_idle.setAlignment(QtCore.Qt.Alignment(0x82))
         self.military_icon = QtWidgets.QLabel()
         self.military_icon.setObjectName("icon")
-        set_pixmap("overlay_icons/military.png", self.military_icon)
         self.military = QtWidgets.QLabel()
         self.military.setAlignment(QtCore.Qt.Alignment(0x82))
 
@@ -63,6 +67,8 @@ class PlayerWidget:
         set_pixmap("flags/" + self.civ + ".webp", self.flag)
         self.worker_icon.setFixedSize(QtCore.QSize(font_size*9/4, font_size * 3))
         set_pixmap("overlay_icons/worker.png", self.worker_icon)
+        self.worker_idle_icon.setFixedSize(QtCore.QSize(font_size*9/4, font_size * 3))
+        set_pixmap("overlay_icons/idle_worker.png", self.worker_idle_icon)
         self.military_icon.setFixedSize(QtCore.QSize(font_size*9/4, font_size * 3))
         set_pixmap("overlay_icons/military.png", self.military_icon)
 
@@ -73,6 +79,7 @@ class PlayerWidget:
 
         self.name.setText(player_data['name'])
         self.worker.setText(str(int(float(player_data['worker']))))
+        self.worker_idle.setText(str(int(float(player_data['idle']))))
         self.military.setText(str(int(float(player_data['military']))))
 
         self.show() if player_data['name'] else self.show(False)
@@ -116,9 +123,9 @@ class AoEOverlay(OverlayWidget):
         self.setStyleSheet(
             #"QWidget{background: red}"
             "OverlayWidget{background: black}"
-            f"QLabel {{font-size: {font_size}pt; color: white; font-weight: bold; margin-top: {font_size*2/3}px; margin-right: {font_size*2/3}px; min-width: {font_size*4}px}}"
-            "QLabel#icon {margin-top: 0px; min-width: 0px; margin-right: 0px}"
-            "QLabel#flag {min-width: 0px; margin-right: 0px}"
+            f"QLabel {{font-size: {font_size}pt; color: white; font-weight: bold; margin-top: {font_size*2/3}px; margin-left: {font_size*2/3}px; min-width: {font_size*4}px}}"
+            "QLabel#icon {margin-top: 0px; min-width: 0px; margin-left: 0px}"
+            "QLabel#flag {min-width: 0px; margin-left: 0px}"
             )
         
         if self.isVisible():
