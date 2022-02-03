@@ -1,6 +1,6 @@
 # AoE4 ReplayOverlay
 
-## [Download](**https://github.com/kuschAoe/AoE4_ReplayOverlay/releases/download/v0.0.1/AoE4_ReplayOverlay.zip)
+**[Download](**https://github.com/kuschAoe/AoE4_ReplayOverlay/releases/download/v0.0.1/AoE4_ReplayOverlay.zip)**
 
 ## Usage
 1. Start AoE4_ReplayOverlay.exe.
