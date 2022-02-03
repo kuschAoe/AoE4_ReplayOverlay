@@ -45,9 +45,11 @@ class TabWidget(QtWidgets.QTabWidget):
                   delayed_seconds)
 
     def newReplayData(self, game_data: Optional[Dict[str, Any]]):
-        
-        self.settigns_tab.overlay_widget.update_data(game_data)
-        
+        try:
+            self.settigns_tab.overlay_widget.update_data(game_data)
+        except Exception:
+            logger.exception(f"There was something wrong with the data extracted from he replay")
+
         if continue_running():
             self.kuschPfuschScheduler(delayed_seconds=1)
 

@@ -15,16 +15,15 @@ def tail(f):
     return f.read()
 
 def get_replay_data() -> Optional[Dict[str, Any]]:
-    info = ""
     try:
+        info = ""
         with open(s.get_aoe4_warnings_log_path(), "rb") as f:
             info = tail(f)
+        reg = re.findall("oVeRlAy(.*?)dAtA", str(info))
+        if reg:
+            return json.loads(reg[-1])
     except Exception:
         logger.exception("")
-
-    reg = re.findall("oVeRlAy(.*?)dAtA", str(info))
-    if reg:
-        return json.loads(reg[-1])
 
 def kuschPfuschWorker(delayed_seconds: int) -> Optional[Dict[str, Any]]:
     time.sleep(delayed_seconds)
