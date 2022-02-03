@@ -21,11 +21,13 @@ function CollectData()
             local entity = EGroup_GetEntityAt(egroup, entityIndex)
 
             if Entity_IsOfType(entity, "worker") then
-                local population = Entity_Population(entity, CT_Personnel)
-                workerPopulation = workerPopulation + population
                 local squad = Entity_GetSquad(entity)
-                if Squad_IsIdle(squad) then
-                    idleWorkerPopulation = idleWorkerPopulation + population
+                if squad ~= nil then
+                    local population = Entity_Population(entity, CT_Personnel)
+                    workerPopulation = workerPopulation + population
+                    if Squad_IsIdle(squad) then
+                        idleWorkerPopulation = idleWorkerPopulation + population
+                    end
                 end
             elseif Entity_IsOfType(entity, "military") then
                 militaryPopulation = militaryPopulation + Entity_Population(entity, CT_Personnel)
