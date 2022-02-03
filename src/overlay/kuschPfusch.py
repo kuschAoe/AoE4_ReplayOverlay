@@ -28,12 +28,14 @@ def get_replay_data() -> Optional[Dict[str, Any]]:
 
 def kuschPfuschWorker(delayed_seconds: int) -> Optional[Dict[str, Any]]:
     time.sleep(delayed_seconds)
-    while True:
+    for i in range(5):
         result = get_replay_data()
         if result is not None:
             return result
 
         sleep(0.5, 0.5)
+    
+    return
 
 
     

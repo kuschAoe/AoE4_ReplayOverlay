@@ -84,6 +84,16 @@ class PlayerWidget:
 
         self.show() if player_data['name'] else self.show(False)
 
+    def no_data(self):
+        self.set_color([255, 255, 255, 255])
+
+        self.name.setText("n/a")
+        self.worker.setText("n/a")
+        self.worker_idle.setText("n/a")
+        self.military.setText("n/a")
+
+        self.show()
+
 
 class AoEOverlay(OverlayWidget):
     """Overlay widget showing AOE4 information """
@@ -116,6 +126,7 @@ class AoEOverlay(OverlayWidget):
         for i in range(8):
             self.players.append(PlayerWidget(i, self.playerlayout))
         [p.show(False) for p in self.players]
+        self.players[0].no_data()
 
     def update_style(self, font_size: int):
         [p.redraw_icons(font_size) for p in self.players]
@@ -137,6 +148,11 @@ class AoEOverlay(OverlayWidget):
             return
 
         [p.show(False) for p in self.players]
+        if not game_data:
+            self.players[0].no_data()
+            self.setFixedSize(self.playerlayout.totalSizeHint())
+            return
+
         for i, player in enumerate(game_data['players']):
             self.players[i].update_player(player)
         self.setFixedSize(self.playerlayout.totalSizeHint())
