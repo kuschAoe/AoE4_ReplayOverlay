@@ -1,5 +1,9 @@
 # 29 January 2022 - Modified by KuschAoe
 
+import json
+from types import TracebackType
+from typing import Tuple, Type
+
 import keyboard
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -178,10 +182,16 @@ class SettingsTab(QtWidgets.QWidget):
 
     def init_hotkeys(self):
         if s.settings.overlay_hotkey:
-            self.key_showhide.setKeySequence(
-                QtGui.QKeySequence.fromString(s.settings.overlay_hotkey))
-            keyboard.add_hotkey(s.settings.overlay_hotkey,
-                                self.show_hide_overlay.emit)
+            try:
+                self.key_showhide.setKeySequence(
+                    QtGui.QKeySequence.fromString(s.settings.overlay_hotkey))
+                keyboard.add_hotkey(s.settings.overlay_hotkey,
+                                    self.show_hide_overlay.emit)
+            except Exception:
+                logger.exception("Failed to set hotkey")
+                s.settings.overlay_hotkey = ""
+                self.key_showhide.setKeySequence(
+                    QtGui.QKeySequence.fromString(""))
 
     def notification(self, text: str, color: str = "black"):
         """ Shows a notification"""
@@ -201,7 +211,8 @@ class SettingsTab(QtWidgets.QWidget):
     def hotkey_changed(self, new_hotkey: str):
         """ Checks whether the hotkey is actually new and valid.
         Updates keyboard threads"""
-        new_hotkey = new_hotkey.replace("Num+", "")
+        old_hotkey = s.settings.overlay_hotkey
+        new_hotkey = CustomKeySequenceEdit.convert_hotkey(new_hotkey)
 
         if new_hotkey == "Del":
             self.key_showhide.setKeySequence(QtGui.QKeySequence.fromString(""))
@@ -210,8 +221,14 @@ class SettingsTab(QtWidgets.QWidget):
         elif not new_hotkey or new_hotkey == s.settings.overlay_hotkey:
             return
 
-        if s.settings.overlay_hotkey:
-            keyboard.remove_hotkey(s.settings.overlay_hotkey)
-        logger.info(f"Setting new hotkey to: {new_hotkey}")
-        s.settings.overlay_hotkey = new_hotkey
-        keyboard.add_hotkey(new_hotkey, self.show_hide_overlay.emit)
+        try:
+            keyboard.add_hotkey(new_hotkey, self.show_hide_overlay.emit)
+            if s.settings.overlay_hotkey:
+                keyboard.remove_hotkey(s.settings.overlay_hotkey)
+            s.settings.overlay_hotkey = new_hotkey
+            logger.info(f"Setting new hotkey to: {new_hotkey}")
+        except Exception:
+            logger.exception(f"Failed to set hotkey: {new_hotkey}")
+            self.message("Failed to use this hotkey", color='red')
+            self.key_showhide.setKeySequence(
+                QtGui.QKeySequence.fromString(old_hotkey))
