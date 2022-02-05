@@ -30,7 +30,9 @@ class PlayerWidget:
             self.worker_idle, self.worker_idle_icon, 
             self.military, self.military_icon,
             self.wheelbarrow, self.food_gather,
-            self.wood_gather, self.mine
+            self.wood_gather, self.mine,
+            self.melee_damage, self.ranged_damage,
+            self.melee_armor, self.ranged_armor
             ]
 
         for column, widget in enumerate(self.widgets):
@@ -61,6 +63,14 @@ class PlayerWidget:
         self.wood_gather.setObjectName("tech")
         self.mine = QtWidgets.QLabel()
         self.mine.setObjectName("tech")
+        self.melee_damage = QtWidgets.QLabel()
+        self.melee_damage.setObjectName("tech")
+        self.ranged_damage = QtWidgets.QLabel()
+        self.ranged_damage.setObjectName("tech")
+        self.melee_armor = QtWidgets.QLabel()
+        self.melee_armor.setObjectName("tech")
+        self.ranged_armor = QtWidgets.QLabel()
+        self.ranged_armor.setObjectName("tech")
 
     def show(self, show: bool = True):
         self.visible = show
@@ -90,6 +100,14 @@ class PlayerWidget:
         set_pixmap("overlay_icons/wood_gather_0.png", self.wood_gather)
         self.mine.setFixedSize(QtCore.QSize(font_size*7/2, font_size * 3))
         set_pixmap("overlay_icons/gold_gather_0.png", self.mine)
+        self.melee_damage.setFixedSize(QtCore.QSize(font_size*7/2, font_size * 3))
+        set_pixmap("overlay_icons/melee_damage_technology_0.png", self.melee_damage)
+        self.ranged_damage.setFixedSize(QtCore.QSize(font_size*7/2, font_size * 3))
+        set_pixmap("overlay_icons/ranged_damage_technology_0.png", self.ranged_damage)
+        self.melee_armor.setFixedSize(QtCore.QSize(font_size*7/2, font_size * 3))
+        set_pixmap("overlay_icons/melee_armor_technology_0.png", self.melee_armor)
+        self.ranged_armor.setFixedSize(QtCore.QSize(font_size*7/2, font_size * 3))
+        set_pixmap("overlay_icons/ranged_armor_technology_0.png", self.ranged_armor)
 
     def update_player(self, player_data: Dict[str, Any]):
         self.civ = player_data['civ']
@@ -100,10 +118,14 @@ class PlayerWidget:
         self.worker.setText(str(int(float(player_data['worker']))))
         self.worker_idle.setText(str(int(float(player_data['idle']))))
         self.military.setText(str(int(float(player_data['military']))))
-        set_pixmap("overlay_icons/wheelbarrow_" + player_data['ecoUpgrades'][0] + ".png", self.wheelbarrow)
-        set_pixmap("overlay_icons/food_gather_" + player_data['ecoUpgrades'][1] + ".png", self.food_gather)
-        set_pixmap("overlay_icons/wood_gather_" + player_data['ecoUpgrades'][2] + ".png", self.wood_gather)
-        set_pixmap("overlay_icons/gold_gather_" + player_data['ecoUpgrades'][3] + ".png", self.mine)
+        set_pixmap("overlay_icons/wheelbarrow_" + player_data['eu'][0] + ".png", self.wheelbarrow)
+        set_pixmap("overlay_icons/food_gather_" + player_data['eu'][1] + ".png", self.food_gather)
+        set_pixmap("overlay_icons/wood_gather_" + player_data['eu'][2] + ".png", self.wood_gather)
+        set_pixmap("overlay_icons/gold_gather_" + player_data['eu'][3] + ".png", self.mine)
+        set_pixmap("overlay_icons/melee_damage_technology_" + player_data['mu'][0] + ".png", self.melee_damage)
+        set_pixmap("overlay_icons/ranged_damage_technology_" + player_data['mu'][1] + ".png", self.ranged_damage)
+        set_pixmap("overlay_icons/melee_armor_technology_" + player_data['mu'][2] + ".png", self.melee_armor)
+        set_pixmap("overlay_icons/ranged_armor_technology_" + player_data['mu'][3] + ".png", self.ranged_armor)
 
         self.show() if player_data['name'] else self.show(False)
 
@@ -118,6 +140,10 @@ class PlayerWidget:
         set_pixmap("overlay_icons/food_gather_0.png", self.food_gather)
         set_pixmap("overlay_icons/wood_gather_0.png", self.wood_gather)
         set_pixmap("overlay_icons/gold_gather_0.png", self.mine)
+        set_pixmap("overlay_icons/melee_damage_technology_0.png", self.melee_damage)
+        set_pixmap("overlay_icons/ranged_damage_technology_0.png", self.ranged_damage)
+        set_pixmap("overlay_icons/melee_armor_technology_0.png", self.melee_armor)
+        set_pixmap("overlay_icons/ranged_armor_technology_0.png", self.ranged_armor)
 
         self.show()
 

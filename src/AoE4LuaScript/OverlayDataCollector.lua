@@ -98,6 +98,90 @@ function HasMineUpgrade(player)
     return 0
 end
 
+function HasMeleeArmor(player)
+    if HasUpgrade(player, 188122) then
+        return 3 --upgrade_melee_armor_iii
+    elseif HasUpgrade(player, 188126) then
+        return 3 --upgrade_melee_armor_iii_sul
+    elseif HasUpgrade(player, 188127) then
+        return 3 --upgrade_melee_armor_iii_mon
+        
+    elseif HasUpgrade(player, 188121) then
+        return 2 --upgrade_melee_armor_ii
+    elseif HasUpgrade(player, 188125) then
+        return 2 --upgrade_melee_armor_ii_sul
+        
+    elseif HasUpgrade(player, 188116) then
+        return 1 --upgrade_melee_armor_i
+    elseif HasUpgrade(player, 188118) then
+        return 1 --upgrade_melee_armor_i_sul
+    end
+    return 0
+end
+
+function HasMeleeDamage(player)
+	if HasUpgrade(player, 188010) then
+		return 3 --upgrade_melee_damage_iii
+	elseif HasUpgrade(player, 188020) then
+		return 3 --upgrade_melee_damage_iii_sul
+	elseif HasUpgrade(player, 188054) then
+		return 3 --upgrade_melee_damage_iii_mon
+		
+	elseif HasUpgrade(player, 187997) then
+		return 2 --upgrade_melee_damage_ii
+	elseif HasUpgrade(player, 188005) then
+		return 2 --upgrade_melee_damage_ii_sul
+		
+	elseif HasUpgrade(player, 187694) then
+		return 1 --upgrade_melee_damage_i
+	elseif HasUpgrade(player, 187702) then
+		return 1 --upgrade_melee_damage_i_sul
+	end
+	return 0
+end
+
+function HasRangedArmor(player)
+	if HasUpgrade(player, 188268) then
+		return 3 --upgrade_ranged_armor_iii
+	elseif HasUpgrade(player, 188365) then
+		return 3 --upgrade_ranged_armor_iii_sul
+	elseif HasUpgrade(player, 188371) then
+		return 3 --upgrade_ranged_armor_iii_mon
+		
+	elseif HasUpgrade(player, 188267) then
+		return 2 --upgrade_ranged_armor_ii
+	elseif HasUpgrade(player, 188364) then
+		return 2 --upgrade_ranged_armor_ii_sul
+		
+	elseif HasUpgrade(player, 188266) then
+		return 1 --upgrade_ranged_armor_i
+	elseif HasUpgrade(player, 188363) then
+		return 1 --upgrade_ranged_armor_i_sul
+	end
+	return 0
+end
+
+function HasRangedDamage(player)
+	if HasUpgrade(player, 188271) then
+		return 3 --upgrade_ranged_damage_iii
+	elseif HasUpgrade(player, 188368) then
+		return 3 --upgrade_ranged_damage_iii_sul
+	elseif HasUpgrade(player, 188374) then
+		return 3 --upgrade_ranged_damage_iii_mon
+		
+	elseif HasUpgrade(player, 188270) then
+		return 2 --upgrade_ranged_damage_ii
+	elseif HasUpgrade(player, 188367) then
+		return 2 --upgrade_ranged_damage_ii_sul
+		
+	elseif HasUpgrade(player, 188269) then
+		return 1 --upgrade_ranged_damage_i
+	elseif HasUpgrade(player, 188366) then
+		return 1 --upgrade_ranged_damage_i_sul
+	end
+	return 0
+end
+
 function CollectData()
     local t = {}
     table.insert(t, "oVeRlAy{\"players\": [")
@@ -133,34 +217,42 @@ function CollectData()
             end
         end
 
-        table.insert(t, "{\"name\": \"")
+        table.insert(t, "{\"name\":\"")
         table.insert(t, playerName)
-        table.insert(t, "\", \"civ\": \"")
+        table.insert(t, "\",\"civ\":\"")
         table.insert(t, civ)
-        table.insert(t, "\", \"worker\": \"")
+        table.insert(t, "\",\"worker\":\"")
         table.insert(t, tostring(workerPopulation))
-        table.insert(t, "\", \"idle\": \"")
+        table.insert(t, "\",\"idle\":\"")
         table.insert(t, tostring(idleWorkerPopulation))
-        table.insert(t, "\", \"military\": \"")
+        table.insert(t, "\",\"military\":\"")
         table.insert(t, tostring(militaryPopulation))
-        table.insert(t, "\", \"team\": \"")
+        table.insert(t, "\",\"team\":\"")
         table.insert(t, tostring(team))
-        table.insert(t, "\", \"color\": [\"")
+        table.insert(t, "\",\"color\":[\"")
         table.insert(t, tostring(color.r))
-        table.insert(t, "\", \"")
+        table.insert(t, "\",\"")
         table.insert(t, tostring(color.g))
-        table.insert(t, "\", \"")
+        table.insert(t, "\",\"")
         table.insert(t, tostring(color.b))
-        table.insert(t, "\", \"")
+        table.insert(t, "\",\"")
         table.insert(t, tostring(color.a))
-        table.insert(t, "\"], \"ecoUpgrades\": [\"")
+        table.insert(t, "\"],\"eu\":[\"")
         table.insert(t, tostring(HasWheelbarrow(player)))
-        table.insert(t, "\", \"")
+        table.insert(t, "\",\"")
         table.insert(t, tostring(HasFoodHarvestUpgrade(player)))
-        table.insert(t, "\", \"")
+        table.insert(t, "\",\"")
         table.insert(t, tostring(HasWoodHarvestUpgrade(player)))
-        table.insert(t, "\", \"")
+        table.insert(t, "\",\"")
         table.insert(t, tostring(HasMineUpgrade(player)))
+        table.insert(t, "\"],\"mu\":[\"")
+        table.insert(t, tostring(HasMeleeDamage(player)))
+        table.insert(t, "\",\"")
+        table.insert(t, tostring(HasRangedDamage(player)))
+        table.insert(t, "\",\"")
+        table.insert(t, tostring(HasMeleeArmor(player)))
+        table.insert(t, "\",\"")
+        table.insert(t, tostring(HasRangedArmor(player)))
         table.insert(t, "\"]}")
         table.insert(t, ",")
     end
