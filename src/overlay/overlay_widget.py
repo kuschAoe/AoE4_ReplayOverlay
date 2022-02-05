@@ -28,7 +28,10 @@ class PlayerWidget:
         self.widgets = [self.flag, self.name, 
             self.worker, self.worker_icon, 
             self.worker_idle, self.worker_idle_icon, 
-            self.military, self.military_icon]
+            self.military, self.military_icon,
+            self.wheelbarrow, self.food_gather,
+            self.wood_gather, self.mine
+            ]
 
         for column, widget in enumerate(self.widgets):
             toplayout.addWidget(widget, row, column)
@@ -50,6 +53,14 @@ class PlayerWidget:
         self.military_icon.setObjectName("icon")
         self.military = QtWidgets.QLabel()
         self.military.setAlignment(QtCore.Qt.Alignment(0x82))
+        self.wheelbarrow = QtWidgets.QLabel()
+        self.wheelbarrow.setObjectName("tech")
+        self.food_gather = QtWidgets.QLabel()
+        self.food_gather.setObjectName("tech")
+        self.wood_gather = QtWidgets.QLabel()
+        self.wood_gather.setObjectName("tech")
+        self.mine = QtWidgets.QLabel()
+        self.mine.setObjectName("tech")
 
     def show(self, show: bool = True):
         self.visible = show
@@ -71,6 +82,14 @@ class PlayerWidget:
         set_pixmap("overlay_icons/idle_worker.png", self.worker_idle_icon)
         self.military_icon.setFixedSize(QtCore.QSize(font_size*9/4, font_size * 3))
         set_pixmap("overlay_icons/military.png", self.military_icon)
+        self.wheelbarrow.setFixedSize(QtCore.QSize(font_size*7/2, font_size * 3))
+        set_pixmap("overlay_icons/wheelbarrow_0.png", self.wheelbarrow)
+        self.food_gather.setFixedSize(QtCore.QSize(font_size*7/2, font_size * 3))
+        set_pixmap("overlay_icons/food_gather_0.png", self.food_gather)
+        self.wood_gather.setFixedSize(QtCore.QSize(font_size*7/2, font_size * 3))
+        set_pixmap("overlay_icons/wood_gather_0.png", self.wood_gather)
+        self.mine.setFixedSize(QtCore.QSize(font_size*7/2, font_size * 3))
+        set_pixmap("overlay_icons/gold_gather_0.png", self.mine)
 
     def update_player(self, player_data: Dict[str, Any]):
         self.civ = player_data['civ']
@@ -81,6 +100,10 @@ class PlayerWidget:
         self.worker.setText(str(int(float(player_data['worker']))))
         self.worker_idle.setText(str(int(float(player_data['idle']))))
         self.military.setText(str(int(float(player_data['military']))))
+        set_pixmap("overlay_icons/wheelbarrow_" + player_data['ecoUpgrades'][0] + ".png", self.wheelbarrow)
+        set_pixmap("overlay_icons/food_gather_" + player_data['ecoUpgrades'][1] + ".png", self.food_gather)
+        set_pixmap("overlay_icons/wood_gather_" + player_data['ecoUpgrades'][2] + ".png", self.wood_gather)
+        set_pixmap("overlay_icons/gold_gather_" + player_data['ecoUpgrades'][3] + ".png", self.mine)
 
         self.show() if player_data['name'] else self.show(False)
 
@@ -91,6 +114,10 @@ class PlayerWidget:
         self.worker.setText("n/a")
         self.worker_idle.setText("n/a")
         self.military.setText("n/a")
+        set_pixmap("overlay_icons/wheelbarrow_0.png", self.wheelbarrow)
+        set_pixmap("overlay_icons/food_gather_0.png", self.food_gather)
+        set_pixmap("overlay_icons/wood_gather_0.png", self.wood_gather)
+        set_pixmap("overlay_icons/gold_gather_0.png", self.mine)
 
         self.show()
 
@@ -137,6 +164,7 @@ class AoEOverlay(OverlayWidget):
             f"QLabel {{font-size: {font_size}pt; color: white; font-weight: bold; margin-top: {font_size*2/3}px; margin-left: {font_size*2/3}px; min-width: {font_size*4}px}}"
             "QLabel#icon {margin-top: 0px; min-width: 0px; margin-left: 0px}"
             "QLabel#flag {min-width: 0px; margin-left: 0px}"
+            "QLabel#tech {margin-top: 0px; min-width: 0px; margin-left: 0px}"
             )
         
         if self.isVisible():
