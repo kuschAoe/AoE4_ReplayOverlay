@@ -14,7 +14,7 @@ import overlay.helper_func as hf
 from overlay.logging_func import get_logger
 from overlay.settings import settings
 from overlay.tab_settings import SettingsTab
-from overlay.worker import scheldule
+from overlay.worker import schedule
 from overlay.thread_shutdown import continue_running
 from overlay.kuschPfusch import kuschPfuschWorker
 
@@ -27,26 +27,26 @@ class TabWidget(QtWidgets.QTabWidget):
         self.version = version
         self.prevent_overlay_update: bool = False
 
-        self.settigns_tab = SettingsTab(self)
+        self.settings_tab = SettingsTab(self)
 
-        self.addTab(self.settigns_tab, "Settings")
+        self.addTab(self.settings_tab, "Settings")
 
     def start(self):
         logger.info(
             f"Starting (v{self.version}) (c:{hf.is_compiled()}) [{platform.platform()}]"
         )
         self.check_for_new_version()
-        self.settigns_tab.start()
+        self.settings_tab.start()
         self.check_waking()
         self.kuschPfuschScheduler()
 
     def kuschPfuschScheduler(self, delayed_seconds: int = 0):
-        scheldule(self.newReplayData, kuschPfuschWorker,
+        schedule(self.newReplayData, kuschPfuschWorker,
                   delayed_seconds)
 
     def newReplayData(self, game_data: Optional[Dict[str, Any]]):
         try:
-            self.settigns_tab.overlay_widget.update_data(game_data)
+            self.settings_tab.overlay_widget.update_data(game_data)
         except Exception:
             raw = ""
             if game_data and "raw" in game_data:
@@ -62,15 +62,15 @@ class TabWidget(QtWidgets.QTabWidget):
         if not link:
             return
         logger.info("New version available!")
-        self.settigns_tab.update_button.clicked.connect(
+        self.settings_tab.update_button.clicked.connect(
             partial(webbrowser.open, link))
-        self.settigns_tab.update_button.show()
+        self.settings_tab.update_button.show()
 
     ### Functionality dedicated to checking for PC waking, and resetting keyboard threads
 
     def check_waking(self):
         """ Manages all checks and keyboard resets"""
-        scheldule(self.pc_waken_from_sleep, self.wait_for_wake)
+        schedule(self.pc_waken_from_sleep, self.wait_for_wake)
 
     def wait_for_wake(self):
         """ Function that checks for a interruption"""
@@ -107,6 +107,6 @@ class TabWidget(QtWidgets.QTabWidget):
             logger.info(f'Resetting keyboard thread')
             keyboard.unhook_all()
             keyboard = importlib.reload(keyboard)
-            self.settigns_tab.init_hotkeys()
+            self.settings_tab.init_hotkeys()
         except Exception:
             logger.exception(f"Failed to reset keyboard")

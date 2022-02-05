@@ -75,11 +75,11 @@ class Worker(QtCore.QRunnable):
             logger.exception("")
 
 
-def scheldule(result_callback: Callable,
+def schedule(result_callback: Callable,
               worker_function: Callable,
               *args,
               error_callback: Optional[Callable] = None):
-    """ Scheldules work on the worker function and passes the result to the callback function"""
+    """ Schedules work on the worker function and passes the result to the callback function"""
     thread = Worker(worker_function, *args)
     thread.signals.result.connect(result_callback)
     if error_callback is not None:

@@ -92,7 +92,7 @@ class MainApp(QtWidgets.QMainWindow):
         self.show()
 
     def closeEvent(self, event):
-        Main.centralWidget().settigns_tab.overlay_widget.hide()
+        Main.centralWidget().settings_tab.overlay_widget.hide()
 
     def finish(self):
         """ Give it some time to stop everything correctly"""
